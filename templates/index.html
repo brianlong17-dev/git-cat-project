@@ -1,45 +1,129 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Pet the Python</title>
     <style>
-        body { text-align: center; font-family: 'helvetica', cursive; background: #270a6c; color: rgb(172, 140, 224); padding-top: 50px; }
-        #pet { font-size: 100px; cursor: pointer; transition: transform 0.2s; display: inline-block; }
-        #pet:active { transform: scale(1.2); }
-        .heart { color: red; position: absolute; animation: float 1s forwards; }
+        body {
+            text-align: center;
+            font-family: 'helvetica', cursive;
+            background: #270a6c;
+            color: rgb(172, 140, 224);
+            padding-top: 50px;
+        }
+
+        #total-count {
+            font-weight: bold;
+            /* Make it bold */
+            display: inline-block;
+            /* Required for transform animations to work */
+            transition: transform 0.1s;
+        }
+
+        /* This is the animation recipe */
+        @keyframes heart-pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.4);
+                color: #ff1744;
+            }
+
+            /* Grow and turn bright red */
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* This class will be added/removed by JavaScript */
+        .pulse-animation {
+            animation: heart-pulse 0.3s ease-out;
+        }
+
+        #pet {
+            font-size: 100px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        #pet:active {
+            transform: scale(1.2);
+        }
+
+        .heart {
+            color: red;
+            position: absolute;
+            animation: float 1s forwards;
+        }
+
         h1 {
-    text-shadow: 2px 2px #ffffff; /* Adds a white glow behind your title */
-}
-        @keyframes float { to { transform: translateY(-100px); opacity: 0; } }
+            text-shadow: 2px 2px #ffffff;
+            /* Adds a white glow behind your title */
+        }
+
+        @keyframes float {
+            to {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
+
 <body>
     <h1>Pet Mr. Pussy!</h1>
     <div id="pet">🐱</div>
     <p id="message">Click the cat to give it love.</p>
+    <p>Love count: <span id="total-count">0</span></p>
 
     <script>
         const pet = document.getElementById('pet');
         const msg = document.getElementById('message');
+        const updateDisplay = (count) => {
+            const counterElement = document.getElementById('total-count');
+            counterElement.innerText = "❤️x" + count;
+            // Trigger the pulse!
+            counterElement.classList.remove('pulse-animation'); // Reset if it's already there
+            void counterElement.offsetWidth; // This is a "magic" line to force a reset
+            counterElement.classList.add('pulse-animation');
+        };
+
+
+        window.onload = () => {
+            // Initialize the total count on page load
+            fetch('/initial_pet')
+                .then(response => response.json())
+                .then(data => {
+                    updateDisplay(data.total_pets); // Call the helper!
+                });
+        };
         pet.onclick = () => {
-        // This is the "letter" sent to Python!
-        fetch('/get_cat_name')
-            .then(response => response.json())
-            .then(data => {
-                msg.innerText = "The Cat's name is: " + data.name;
-            });
-        
+            // This is the "letter" sent to Python!
+            fetch('/get_cat_name')
+                .then(response => response.json())
+                .then(data => {
+                    msg.innerText = "The Cat's name is: " + data.name;
+                });
+            fetch('/pet_cat')
+                .then(response => response.json())
+                .then(data => {
+                    updateDisplay(data.total_pets); // Call the helper!
+                });
             // 3. EMOJI LOGIC: Create the floating heart
-        const heart = document.createElement('span');
-        heart.innerText = '❤️';
-        heart.className = 'heart';
-        heart.style.left = event.pageX + 'px';
-        heart.style.top = event.pageY + 'px';
-        document.body.appendChild(heart);
-        
-        // Remove heart after animation finishes
-        setTimeout(() => heart.remove(), 1000);
-    };
+            const heart = document.createElement('span');
+            heart.innerText = '❤️';
+            heart.className = 'heart';
+            heart.style.left = event.pageX + 'px';
+            heart.style.top = event.pageY + 'px';
+            document.body.appendChild(heart);
+
+            // Remove heart after animation finishes
+            setTimeout(() => heart.remove(), 1000);
+        };
     </script>
 </body>
+
 </html>
