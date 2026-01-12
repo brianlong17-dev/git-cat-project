@@ -28,6 +28,17 @@
             .then(data => {
                 msg.innerText = "The Cat's name is: " + data.name;
             });
+        
+            // 3. EMOJI LOGIC: Create the floating heart
+        const heart = document.createElement('span');
+        heart.innerText = '❤️';
+        heart.className = 'heart';
+        heart.style.left = event.pageX + 'px';
+        heart.style.top = event.pageY + 'px';
+        document.body.appendChild(heart);
+        
+        // Remove heart after animation finishes
+        setTimeout(() => heart.remove(), 1000);
     };
     </script>
 </body>
