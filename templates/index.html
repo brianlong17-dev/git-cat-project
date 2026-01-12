@@ -74,12 +74,14 @@
 </head>
 
 <body>
+    <audio id="meow-sound" src="/static/meow.mp3"></audio>
     <h1>Pet Mr. Pussy!</h1>
     <div id="pet">🐱</div>
     <p id="message">Click the cat to give it love.</p>
     <p>Love count: <span id="total-count">0</span></p>
 
     <script>
+        let clickCount = 0;
         const pet = document.getElementById('pet');
         const msg = document.getElementById('message');
         const updateDisplay = (count) => {
@@ -101,7 +103,14 @@
                 });
         };
         pet.onclick = () => {
-            // This is the "letter" sent to Python!
+            clickCount++; // Increase our counter by 1
+
+            // Check if clickCount is divisible by 3 (remainder is 0)
+            if (clickCount % 3 === 0) {
+                const audio = document.getElementById('meow-sound');
+                audio.currentTime = 0;
+                audio.play();
+            }
             fetch('/get_cat_name')
                 .then(response => response.json())
                 .then(data => {
