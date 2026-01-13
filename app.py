@@ -1,9 +1,26 @@
 from flask import Flask, render_template, jsonify
+from flask_sqlalchemy import SQLAlchemy
 import random
 import os
 
 app = Flask(__name__)
-STATS_FILE = "stats.txt"
+# Tell Flask to use the Database URL from Render, or a local one if testing
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///test.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Create a "Table" for our Pet Count
+class Stats(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    total_pets = db.Column(db.Integer, default=0)
+
+# Create the database table if it doesn't exist
+with app.app_context():
+    db.create_all()
+    # Initialize the row if it's empty
+    if not Stats.query.first():
+        db.session.add(Stats(total_pets=0))
+        db.session.commit()
 
 @app.route('/')
 def home():
@@ -11,45 +28,21 @@ def home():
 
 @app.route('/get_cat_name')
 def get_name():
-    names = ["Professor Paws", "Lord Fluffington", "Sir Purr-a-lot", "Captain Meow", "General Whiskers"]
+    names = ["Professor Pawsy", "Lord Fluffingtony", "Sir Purr-a-lot", "Captain Meow", "General Whiskers"]
     return jsonify(name=random.choice(names))
 
 @app.route('/initial_pet')
 def initial_pet():
-    # 1. Read the current count from the file
-    if os.path.exists(STATS_FILE):
-        with open(STATS_FILE, "r") as f:
-            try:
-                count = int(f.read())
-            except ValueError:
-                count = 0
-    else:
-        count = 0
-
-    return jsonify(total_pets=count)
+    stats = Stats.query.first()
+    return jsonify(total_pets=stats.total_pets)
 
 
 @app.route('/pet_cat')
 def pet_cat():
-
-    # 1. Read the current count from the file
-    if os.path.exists(STATS_FILE):
-        with open(STATS_FILE, "r") as f:
-            try:
-                count = int(f.read())
-            except ValueError:
-                count = 0
-    else:
-        count = 0
-    
-    # Increase it
-    count += 1
-    
-    # Save it back
-    with open("stats.txt", "w") as f:
-        f.write(str(count))
-        
-    return jsonify(total_pets=count)
+    stats = Stats.query.first()
+    stats.total_pets += 1
+    db.session.commit()
+    return jsonify(total_pets=stats.total_pets)
 
 
 if __name__ == '__main__':

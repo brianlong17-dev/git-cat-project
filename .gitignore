@@ -1,0 +1,14 @@
+# Ignore the VS Code settings
+.vscode/
+
+# Ignore Python's temporary background files
+__pycache__/
+*.pyc
+
+# Ignore your local "Test" database
+instance/
+test.db
+
+# Ignore virtual environments if you have them
+venv/
+.env
