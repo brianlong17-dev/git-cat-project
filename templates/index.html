@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Pet the Python</title>
+    <title>Cat Petting Olympics</title>
     <style>
         body {
             text-align: center;
@@ -47,6 +47,7 @@
             cursor: pointer;
             transition: transform 0.2s;
             display: inline-block;
+            user-select: none; /* Prevents highlighting */
         }
 
         #pet:active {
@@ -55,8 +56,13 @@
 
         .heart {
             color: red;
+            /*Old browsers will possibly show black heart text Red heart */
             position: absolute;
-            animation: float 1s forwards;
+            animation: float 2s ease-in forwards;
+            user-select: none;
+            /* Prevents highlighting */
+            pointer-events: none;
+            /* The "Ghost" property */
         }
 
         h1 {
@@ -66,7 +72,7 @@
 
         @keyframes float {
             to {
-                transform: translateY(-100px);
+                transform: translateY(-200px) translateX(var(--random-x)) rotate(-20deg);
                 opacity: 0;
             }
         }
@@ -75,7 +81,7 @@
 
 <body>
     <audio id="meow-sound" src="/static/meow.mp3"></audio>
-    <h1>Pet Mr. Pussy!</h1>
+    <h1>Pet Mr. Pussycat!</h1>
     <div id="pet">🐱</div>
     <p id="message">Click the cat to give it love.</p>
     <p>Love count: <span id="total-count">0</span></p>
@@ -105,6 +111,7 @@
         pet.onclick = () => {
             clickCount++; // Increase our counter by 1
 
+
             // Check if clickCount is divisible by 3 (remainder is 0)
             if (clickCount % 3 === 0) {
                 const audio = document.getElementById('meow-sound');
@@ -123,14 +130,20 @@
                 });
             // 3. EMOJI LOGIC: Create the floating heart
             const heart = document.createElement('span');
-            heart.innerText = '❤️';
+            if (clickCount % 10 === 0) {
+                heart.innerText = '💖'; // Special heart for every 10th click
+            } else {
+                heart.innerText = '❤️';
+            }
+            const randomX = Math.floor(Math.random() * 101) - 50;
+            heart.style.setProperty('--random-x', randomX + 'px');
             heart.className = 'heart';
             heart.style.left = event.pageX + 'px';
             heart.style.top = event.pageY + 'px';
             document.body.appendChild(heart);
 
             // Remove heart after animation finishes
-            setTimeout(() => heart.remove(), 1000);
+            setTimeout(() => heart.remove(), 2000);
         };
     </script>
 </body>
