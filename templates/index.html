@@ -47,7 +47,8 @@
             cursor: pointer;
             transition: transform 0.2s;
             display: inline-block;
-            user-select: none; /* Prevents highlighting */
+            user-select: none;
+            /* Prevents highlighting */
         }
 
         #pet:active {
@@ -70,6 +71,12 @@
             /* Adds a white glow behind your title */
         }
 
+        .gold-heart {
+            filter: drop-shadow(0 0 10px gold);
+            /* This makes the emoji glow gold and shifts the red color to yellow */
+            font-weight: bold;
+        }
+
         @keyframes float {
             to {
                 transform: translateY(-200px) translateX(var(--random-x)) rotate(-20deg);
@@ -90,8 +97,8 @@
         let clickCount = 0;
         const pet = document.getElementById('pet');
         const msg = document.getElementById('message');
+        const counterElement = document.getElementById('total-count');
         const updateDisplay = (count) => {
-            const counterElement = document.getElementById('total-count');
             counterElement.innerText = "❤️x" + count;
             // Trigger the pulse!
             counterElement.classList.remove('pulse-animation'); // Reset if it's already there
@@ -99,6 +106,25 @@
             counterElement.classList.add('pulse-animation');
         };
 
+        const heartLogic = (count, clickEvent) => {
+            const heart = document.createElement('span');
+            heart.classList.add('heart');
+            if (count % 10 === 0) {
+                heart.innerText = '💖'; // Special heart for every 10th click
+                heart.classList.add('gold-heart');
+            } else {
+                heart.innerText = '❤️';
+            }
+
+            const randomX = Math.floor(Math.random() * 101) - 50;
+            heart.style.setProperty('--random-x', randomX + 'px');
+            /*heart.className = 'heart';*/
+            heart.style.left = clickEvent.pageX + 'px';
+            heart.style.top = clickEvent.pageY + 'px';
+            document.body.appendChild(heart);
+            // Remove heart after animation finishes
+            setTimeout(() => heart.remove(), 2000);
+        };
 
         window.onload = () => {
             // Initialize the total count on page load
@@ -108,42 +134,23 @@
                     updateDisplay(data.total_pets); // Call the helper!
                 });
         };
-        pet.onclick = () => {
+        pet.onclick = (event) => {
             clickCount++; // Increase our counter by 1
-
-
             // Check if clickCount is divisible by 3 (remainder is 0)
             if (clickCount % 3 === 0) {
                 const audio = document.getElementById('meow-sound');
                 audio.currentTime = 0;
                 audio.play();
             }
-            fetch('/get_cat_name')
-                .then(response => response.json())
-                .then(data => {
-                    msg.innerText = "The Cat's name is: " + data.name;
-                });
+
             fetch('/pet_cat')
                 .then(response => response.json())
                 .then(data => {
-                    updateDisplay(data.total_pets); // Call the helper!
+                    msg.innerText = "The Cat's name is: " + data.name;
+                    updateDisplay(data.total_pets);
+                    heartLogic(data.total_pets, event) // Call the helper!
                 });
-            // 3. EMOJI LOGIC: Create the floating heart
-            const heart = document.createElement('span');
-            if (clickCount % 10 === 0) {
-                heart.innerText = '💖'; // Special heart for every 10th click
-            } else {
-                heart.innerText = '❤️';
-            }
-            const randomX = Math.floor(Math.random() * 101) - 50;
-            heart.style.setProperty('--random-x', randomX + 'px');
-            heart.className = 'heart';
-            heart.style.left = event.pageX + 'px';
-            heart.style.top = event.pageY + 'px';
-            document.body.appendChild(heart);
 
-            // Remove heart after animation finishes
-            setTimeout(() => heart.remove(), 2000);
         };
     </script>
 </body>

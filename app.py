@@ -25,11 +25,7 @@ with app.app_context():
 @app.route('/')
 def home():
     return render_template('index.html')
-
-@app.route('/get_cat_name')
-def get_name():
-    names = ["Professor Pawsy", "Lord Fluffingtony", "Sir Purr-a-lot", "Captain Meow", "General Whiskers"]
-    return jsonify(name=random.choice(names))
+    
 
 @app.route('/initial_pet')
 def initial_pet():
@@ -39,10 +35,11 @@ def initial_pet():
 
 @app.route('/pet_cat')
 def pet_cat():
+    names = ["Professor Pawsy", "Lord Fluffingtony", "Sir Purr-a-lot", "Captain Meow", "General Whiskers"]
     stats = Stats.query.first()
     stats.total_pets += 1
     db.session.commit()
-    return jsonify(total_pets=stats.total_pets)
+    return jsonify(total_pets=stats.total_pets, name=random.choice(names))
 
 
 if __name__ == '__main__':
