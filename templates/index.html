@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>">
     <title>Cat Petting Olympics</title>
     <style>
         body {
@@ -10,6 +11,7 @@
             background: #270a6c;
             color: rgb(172, 140, 224);
             padding-top: 50px;
+            opacity: 0;
         }
 
         #total-count {
@@ -66,8 +68,9 @@
             /* The "Ghost" property */
         }
 
-        h1 {
-            text-shadow: 2px 2px #ffffff;
+        h1,
+        h2 {
+            text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.3);
             /* Adds a white glow behind your title */
         }
 
@@ -90,10 +93,11 @@
     <audio id="meow-sound" src="/static/meow.mp3"></audio>
     <h1>Pet Mr. Pussycat!</h1>
     <div id="pet">🐱</div>
-    <p id="message">Click the cat to give it love.</p>
+    <h2 id="message">Click the cat to give it love.</h2>
     <p>Love count: <span id="total-count">0</span></p>
 
     <script>
+        let currentCatId = null;
         let clickCount = 0;
         const pet = document.getElementById('pet');
         const msg = document.getElementById('message');
@@ -104,6 +108,32 @@
             counterElement.classList.remove('pulse-animation'); // Reset if it's already there
             void counterElement.offsetWidth; // This is a "magic" line to force a reset
             counterElement.classList.add('pulse-animation');
+        };
+
+        function getContrastColor(hexColor) {
+            // Remove the # if it's there
+            hexColor = hexColor.replace("#", "");
+
+            // Convert hex to RGB
+            const r = parseInt(hexColor.substr(0, 2), 16);
+            const g = parseInt(hexColor.substr(2, 2), 16);
+            const b = parseInt(hexColor.substr(4, 2), 16);
+
+            // Calculate brightness (this is a standard formula)
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+            // If brightness is > 128, the background is light, so use black text. 
+            // Otherwise, use white text.
+            return brightness > 128 ? 'black' : 'white';
+        }
+
+        const updateCat = (cat) => {
+            currentCatId = cat.id;
+            pet.innerText = cat.emoji;
+            /*document.body.style.backgroundColor = cat.bg_color;*/
+            const textColor = getContrastColor(cat.bg_color);
+            document.body.style.color = cat.bg_color;
+            msg.innerText = "The Cat's name is: " + cat.name;
         };
 
         const heartLogic = (count, clickEvent) => {
@@ -131,7 +161,9 @@
             fetch('/initial_pet')
                 .then(response => response.json())
                 .then(data => {
-                    updateDisplay(data.total_pets); // Call the helper!
+                    updateCat(data);
+                    updateDisplay(data.pet_count);
+                    document.body.style.opacity = 1 // Call the helper!
                 });
         };
         pet.onclick = (event) => {
@@ -143,12 +175,11 @@
                 audio.play();
             }
 
-            fetch('/pet_cat')
+            fetch(`/pet_cat/${currentCatId}`)
                 .then(response => response.json())
                 .then(data => {
-                    msg.innerText = "The Cat's name is: " + data.name;
-                    updateDisplay(data.total_pets);
-                    heartLogic(data.total_pets, event) // Call the helper!
+                    updateDisplay(data.pet_count);
+                    heartLogic(data.pet_count, event) // Call the helper!
                 });
 
         };
