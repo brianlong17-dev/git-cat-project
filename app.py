@@ -51,8 +51,21 @@ def initial_pet():
     return jsonify(id=cat.id, pet_count=cat.pet_count, name=cat.name, emoji=cat.emoji, bg_color=cat.bg_color)
 
 
+@app.route('/leaderboard')
+def leaderboard():
+    # Get all cats, ordered by pet_count (highest first)
+    cats = Cat.query.order_by(Cat.pet_count.desc()).all()
+    # Convert the list of Cat objects into a list of dictionaries
+    leaderboard_data = [
+        {"id": c.id, "name": c.name, "pet_count": c.pet_count, "emoji": c.emoji} 
+        for c in cats
+    ]
+    return jsonify(leaderboard_data)
 
-
+@app.route('/get_cat/<int:cat_id>')
+def get_cat(cat_id):
+    cat = Cat.query.get_or_404(cat_id)
+    return jsonify(id=cat.id, name=cat.name, emoji=cat.emoji, bg_color=cat.bg_color, pet_count=cat.pet_count)
 
 @app.route('/pet_cat/<int:cat_id>') # <int:cat_id> tells Flask to expect a number here
 def pet_cat(cat_id):

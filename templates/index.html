@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>">
     <title>Cat Petting Olympics</title>
     <style>
         body {
@@ -80,6 +81,13 @@
             font-weight: bold;
         }
 
+        .active-cat {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-weight: bold;
+            padding: 5px;
+        }
+
         @keyframes float {
             to {
                 transform: translateY(-200px) translateX(var(--random-x)) rotate(-20deg);
@@ -95,6 +103,10 @@
     <div id="pet">🐱</div>
     <h2 id="message">Click the cat to give it love.</h2>
     <p>Love count: <span id="total-count">0</span></p>
+    <div id="leaderboard-container">
+        <h3>Cat Rankings</h3>
+        <ul id="leaderboard-list" style="list-style: none; padding: 0;"></ul>
+    </div>
 
     <script>
         let currentCatId = null;
@@ -102,12 +114,51 @@
         const pet = document.getElementById('pet');
         const msg = document.getElementById('message');
         const counterElement = document.getElementById('total-count');
-        const updateDisplay = (count) => {
+        const updatePetCount = (count) => {
             counterElement.innerText = "❤️x" + count;
             // Trigger the pulse!
             counterElement.classList.remove('pulse-animation'); // Reset if it's already there
             void counterElement.offsetWidth; // This is a "magic" line to force a reset
             counterElement.classList.add('pulse-animation');
+        };
+
+        const loadSpecificCat = (catId) => {
+            fetch(`/get_cat/${catId}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateCat(data);
+                    updatePetCount(data.pet_count);
+                    updateLeaderboard();
+                });
+        };
+
+        const updateLeaderboard = () => {
+            fetch('/leaderboard')
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById('leaderboard-list');
+                    list.innerHTML = ''; // Clear the old list
+
+                    data.forEach(cat => {
+                        const li = document.createElement('li');
+                        if (cat.id === currentCatId) {
+                            li.classList.add('active-cat');
+                        }
+                        li.style.cursor = "pointer";
+                        li.style.margin = "10px 0";
+                        li.innerHTML = `${cat.emoji} <strong>${cat.name}</strong>: ${cat.pet_count} pets`;
+
+                        // This is the "Magic": make each list item clickable
+                        li.onclick = () => {
+                            // Instead of random, we just load this specific cat's data!
+                            // We can reuse the updateCat logic here
+                            currentCatId = cat.id;
+                            // We need a way to get the full cat data (including color)
+                            loadSpecificCat(cat.id);
+                        };
+                        list.appendChild(li);
+                    });
+                });
         };
 
         function getContrastColor(hexColor) {
@@ -162,7 +213,8 @@
                 .then(response => response.json())
                 .then(data => {
                     updateCat(data);
-                    updateDisplay(data.pet_count);
+                    updatePetCount(data.pet_count);
+                    updateLeaderboard(); // Load the leaderboard
                     document.body.style.opacity = 1 // Call the helper!
                 });
         };
@@ -178,8 +230,9 @@
             fetch(`/pet_cat/${currentCatId}`)
                 .then(response => response.json())
                 .then(data => {
-                    updateDisplay(data.pet_count);
-                    heartLogic(data.pet_count, event) // Call the helper!
+                    updatePetCount(data.pet_count);
+                    heartLogic(data.pet_count, event);
+                    updateLeaderboard();
                 });
 
         };
