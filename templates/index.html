@@ -5,245 +5,8 @@
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>">
     <title>Cat Petting Olympics</title>
-    <style>
-        body {
-            text-align: center;
-            font-family: 'helvetica', cursive;
-            background: #270a6c;
-            color: rgb(172, 140, 224);
-            padding-top: 50px;
-            opacity: 0;
-        }
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-        #total-count {
-            font-weight: bold;
-            /* Make it bold */
-            display: inline-block;
-            /* Required for transform animations to work */
-            transition: transform 0.1s;
-        }
-
-        /* This is the animation recipe */
-        @keyframes heart-pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.4);
-                color: #ff1744;
-            }
-
-            /* Grow and turn bright red */
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        /* This class will be added/removed by JavaScript */
-        .pulse-animation {
-            animation: heart-pulse 0.3s ease-out;
-        }
-
-        #pet {
-            font-size: 100px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            display: inline-block;
-            user-select: none;
-            touch-action: manipulation;
-            /* Prevents highlighting */
-        }
-
-        #pet:active {
-            transform: scale(1.2);
-        }
-
-        .heart {
-            color: red;
-            /*Old browsers will possibly show black heart text Red heart */
-            position: absolute;
-            animation: float 2s ease-in forwards;
-            user-select: none;
-            /* Prevents highlighting */
-            pointer-events: none;
-            /* The "Ghost" property */
-        }
-
-        h1,
-        h2 {
-            text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.3);
-            /* Adds a white glow behind your title */
-        }
-
-        .gold-heart {
-            filter: drop-shadow(0 0 10px gold);
-            /* This makes the emoji glow gold and shifts the red color to yellow */
-            font-weight: bold;
-        }
-
-        .active-cat {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            font-weight: bold;
-            padding: 5px;
-        }
-
-        #cat-gallery {
-            display: flex;
-            flex-wrap: wrap;
-            /* This makes cards jump to the next line on mobile */
-            justify-content: center;
-            gap: 15px;
-            padding: 20px;
-        }
-
-        .cat-card {
-            width: 120px;
-            /* Fixed width so they look like consistent cards */
-            padding: 15px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
-
-        .cat-card:hover {
-            transform: translateY(-5px);
-            /* Lift the card slightly when hovered */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        #add-cat-form {
-            margin: 50px auto;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            /* Semi-transparent white */
-            border-radius: 20px;
-            max-width: 500px;
-            backdrop-filter: blur(10px);
-            /* Blurs the background behind the form */
-            border: 1px solid rgba(255, 255, 255, 0.2);
-
-
-        }
-
-        #add-cat-form h3 {
-            margin-top: 0;
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        /* Style all inputs, selects, and buttons together for consistency */
-        #new-cat-name,
-        #new-cat-emoji,
-        #new-cat-color,
-        #add-cat-form button {
-            padding: 12px;
-            margin: 5px;
-            border-radius: 10px;
-            border: none;
-            outline: none;
-            font-size: 16px;
-        }
-
-        #new-cat-name {
-            width: 200px;
-        }
-
-        #new-cat-emoji {
-            cursor: pointer;
-            background: white;
-        }
-
-        #new-cat-color {
-            width: 45px;
-            height: 45px;
-            padding: 0;
-            /* Removes the weird internal spacing */
-            border: none;
-            background: none;
-            /* Removes the default grey button background */
-            cursor: pointer;
-            vertical-align: middle;
-            /* Backup alignment for older browsers */
-        }
-
-        #add-cat-form button {
-            background: #00ce8a;
-            /* A nice "Success" green */
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-            padding: 12px 25px;
-        }
-
-        #add-cat-form button:hover {
-            background: #00f0a0;
-            transform: translateY(-2px);
-        }
-
-        #add-cat-form button:active {
-            transform: translateY(0);
-        }
-
-        #toggle-form-btn {
-            padding: 12px 20px;
-            border-radius: 50px;
-            /* Makes it a pill shape */
-            border: none;
-            background: #00ce8a;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        #toggle-form-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0, 206, 138, 0.4);
-        }
-
-        /* Hide the default browser arrow so we can use our own */
-        summary::-webkit-details-marker {
-            display: none;
-        }
-
-        #leaderboard-details {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 15px;
-            max-width: 600px;
-            margin: 20px auto;
-            transition: all 0.3s ease;
-        }
-
-        #leaderboard-details[open] {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        #leaderboard-details[open] #arrow {
-            display: inline-block;
-            transform: rotate(90deg);
-            /* Rotates the arrow down when open */
-            transition: transform 0.2s;
-        }
-
-        #arrow {
-            margin-right: 10px;
-            transition: transform 0.2s;
-            display: inline-block;
-        }
-
-        @keyframes float {
-            to {
-                transform: translateY(-200px) translateX(var(--random-x)) rotate(-20deg);
-                opacity: 0;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -290,49 +53,33 @@
         + Add a New Athlete
     </button>
 
+
     <script>
+        /* ============================================================
+   1. GLOBAL STATE & SELECTORS
+   ============================================================ */
+        const pet = document.getElementById('pet');
+        const counterElement = document.getElementById('total-count');
+        const message = document.getElementById('message');
+        const gallery = document.getElementById('cat-gallery');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const leaderboardDetails = document.getElementById('leaderboard-details');
+        const meowSound = document.getElementById('meow-sound');
+
         let currentCatId = null;
         let clickCount = 0;
-        const pet = document.getElementById('pet');
-        const msg = document.getElementById('message');
-        const counterElement = document.getElementById('total-count');
 
-        // Listen for opening/closing the rankings
-        document.getElementById('leaderboard-details').addEventListener('toggle', (event) => {
-            const isOpen = event.target.open;
-            localStorage.setItem('rankingsOpen', isOpen);
-        });
-        const updatePetCount = (count) => {
-            counterElement.innerText = "❤️x" + count;
-            // Trigger the pulse!
-            counterElement.classList.remove('pulse-animation'); // Reset if it's already there
-            void counterElement.offsetWidth; // This is a "magic" line to force a reset
-            counterElement.classList.add('pulse-animation');
-        };
-
-        const toggleCatForm = () => {
-            const container = document.getElementById('add-cat-form-container');
-            const btn = document.getElementById('toggle-form-btn');
-
-            if (container.style.display === 'none') {
-                container.style.display = 'block';
-                btn.innerText = 'Cancel'; // Change button text when open
-                btn.style.background = '#e74c3c'; // Optional: make it red for "cancel"
-            } else {
-                container.style.display = 'none';
-                btn.innerText = '+ Add a New Athlete';
-                btn.style.background = '#00ce8a'; // Switch back to green
-            }
-        };
+        /* ============================================================
+           2. API & DATA LOGIC (Functionality)
+           ============================================================ */
 
         const loadSpecificCat = (catId) => {
-            const idToFetch = Number(catId);
             if (currentCatId != catId) {
                 return fetch(`/get_cat/${catId}`)
                     .then(response => response.json())
                     .then(data => {
-                        updateCat(data);
-                        updatePetCount(data.pet_count);
+                        updateCatUI(data);
+                        updatePetCountUI(data.pet_count);
                         updateLeaderboard();
                     });
             }
@@ -346,9 +93,9 @@
                 color: document.getElementById('new-cat-color').value
             };
 
-            if (catData.name.trim() === "") {
+            if (!catData.name.trim()) {
                 alert("Wait! Your cat needs a name.");
-                return; // This stops the function from sending the data to Flask
+                return;
             }
 
             fetch('/add_cat', {
@@ -360,164 +107,189 @@
                 .then(data => {
                     if (data.success) {
                         toggleCatForm();
-                        updateLeaderboard(); // Refresh the gallery to show the new cat!
-                        loadSpecificCat(data.id); // Switch to the new cat immediately
+                        updateLeaderboard();
+                        loadSpecificCat(data.id);
                     }
                 });
+        };
+
+        /* ============================================================
+           3. DISPLAY LOGIC (UI Updates)
+           ============================================================ */
+
+        const updateCatUI = (cat) => {
+            currentCatId = cat.id;
+            localStorage.setItem('lastCatId', cat.id);
+
+            pet.innerText = cat.emoji;
+            message.innerText = "The Cat's name is: " + cat.name;
+
+            const textColor = getContrastColor(cat.bg_color);
+            //document.body.style.backgroundColor = cat.bg_color;
+            //document.body.style.color = textColor;
+        };
+
+        const updatePetCountUI = (count) => {
+            counterElement.innerText = "❤️x" + count;
+            counterElement.classList.remove('pulse-animation');
+            void counterElement.offsetWidth; // Force CSS reflow
+            counterElement.classList.add('pulse-animation');
+        };
+
+        const heartLogic = (count, event) => {
+            const heart = document.createElement('span');
+            heart.classList.add('heart');
+            heart.innerText = (count % 10 === 0) ? '💖' : '❤️';
+            if (count % 10 === 0) heart.classList.add('gold-heart');
+
+            const randomX = Math.floor(Math.random() * 101) - 50;
+            heart.style.setProperty('--random-x', randomX + 'px');
+            heart.style.left = event.pageX + 'px';
+            heart.style.top = event.pageY + 'px';
+
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 2000);
         };
 
         const updateLeaderboard = () => {
             fetch('/leaderboard')
                 .then(response => response.json())
                 .then(data => {
-                    const list = document.getElementById('leaderboard-list');
-                    list.innerHTML = ''; // Clear the old list
-                    const gallery = document.getElementById('cat-gallery');
+                    // 1. Clear current views
+                    leaderboardList.innerHTML = '';
                     gallery.innerHTML = '';
-                    let catCount = 0;
 
-                    data.forEach(cat => {
-                        catCount++;
-                        const card = document.createElement('div');
+                    data.forEach((cat, index) => {
+                        const rank = index + 1;
 
-                        if (catCount === 1) {
-                            card.style.boxShadow = '0 0 15px 5px gold';
-                            card.style.backgroundColor = cat.bg_color;
-                        }
-                        if (catCount === 2) {
-                            card.style.boxShadow = '0 0 15px 5px silver';
-                        }
-                        if (catCount === 3) {
-                            card.style.boxShadow = '0 0 15px 5px #cd7f32'; // Bronze color
-                        }
-                        if (catCount <= 5) {
-                            card.className = 'cat-card';
-                            card.style.backgroundColor = cat.bg_color;
-                            card.innerHTML = `
-                            <div style="font-size: 30px;">${cat.emoji}</div>
-                                <div style="font-weight: bold;">${cat.name}</div>
-                                <div>❤️ x ${cat.pet_count}</div>`;
-
-                            card.onclick = () => loadSpecificCat(cat.id);
+                        // 2. Build and add the Gallery Card (Top 5 only)
+                        if (rank <= 5) {
+                            const card = createCatCard(cat, rank);
                             gallery.appendChild(card);
-
-                        }
-                        const li = document.createElement('li');
-                        if (cat.id === currentCatId) {
-                            li.classList.add('active-cat');
-                        }
-                        if (cat.id === currentCatId) {
-                            card.classList.add('active-cat');
                         }
 
-                        card.style.backgroundColor = cat.bg_color;
-                        li.style.cursor = "pointer";
-                        li.style.margin = "10px 0";
-                        li.innerHTML = `${cat.emoji} <strong>${cat.name}</strong>: ${cat.pet_count} pets`;
-
-                        // This is the "Magic": make each list item clickable
-                        li.onclick = () => {
-                            // Instead of random, we just load this specific cat's data!
-                            // We can reuse the updateCat logic here
-                            currentCatId = cat.id;
-                            // We need a way to get the full cat data (including color)
-                            loadSpecificCat(cat.id);
-                        };
-                        list.appendChild(li);
+                        // 3. Build and add the List Item
+                        const listItem = createLeaderboardItem(cat);
+                        leaderboardList.appendChild(listItem);
                     });
                 });
         };
 
-        function getContrastColor(hexColor) {
-            // Remove the # if it's there
-            hexColor = hexColor.replace("#", "");
+        // --- Helper: Build the Gallery Card ---
+        const createCatCard = (cat, rank) => {
+            const card = document.createElement('div');
+            card.className = 'cat-card';
+            const color = cat.bg_color;
+            card.style.backgroundColor = color;
+            if (getContrastColor(color) === 'black') {
+                card.style.color = '#270a6c';
+            } else {
+                card.style.color = '#270a6c';
+            }
 
-            // Convert hex to RGB
+            // Handle Medals
+            if (rank === 1) card.style.boxShadow = '0 0 15px 5px gold';
+            if (rank === 2) card.style.boxShadow = '0 0 15px 5px silver';
+            if (rank === 3) card.style.boxShadow = '0 0 15px 5px #cd7f32';
+
+            if (cat.id === currentCatId) card.classList.add('active-cat');
+
+            card.innerHTML = `
+        <div style="font-size: 30px;">${cat.emoji}</div>
+        <div style="font-weight: bold;">${cat.name}</div>
+        <div>❤️ x ${cat.pet_count}</div>
+    `;
+
+            card.onclick = () => loadSpecificCat(cat.id);
+            return card;
+        };
+
+        // --- Helper: Build the List Item ---
+        const createLeaderboardItem = (cat) => {
+            const li = document.createElement('li');
+            li.style.cursor = "pointer";
+            li.style.margin = "10px 0";
+
+            if (cat.id === currentCatId) li.classList.add('active-cat');
+
+            li.innerHTML = `${cat.emoji} <strong>${cat.name}</strong>: ${cat.pet_count} pets`;
+            li.onclick = () => loadSpecificCat(cat.id);
+
+            return li;
+        };
+
+        // Helper: Pure Math
+        function getContrastColor(hexColor) {
+            hexColor = hexColor.replace("#", "");
             const r = parseInt(hexColor.substr(0, 2), 16);
             const g = parseInt(hexColor.substr(2, 2), 16);
             const b = parseInt(hexColor.substr(4, 2), 16);
-
-            // Calculate brightness (this is a standard formula)
             const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-            // If brightness is > 128, the background is light, so use black text. 
-            // Otherwise, use white text.
             return brightness > 128 ? 'black' : 'white';
         }
 
-        const updateCat = (cat) => {
-            currentCatId = cat.id;
-            pet.innerText = cat.emoji;
-            localStorage.setItem('lastCatId', cat.id);
-            /*document.body.style.backgroundColor = cat.bg_color;*/
-            const textColor = getContrastColor(cat.bg_color);
-            //document.body.style.color = cat.bg_color;
-            msg.innerText = "The Cat's name is: " + cat.name;
-        };
+        /* ============================================================
+           4. EVENT LISTENERS (The Wiring)
+           ============================================================ */
 
-        const heartLogic = (count, clickEvent) => {
-            const heart = document.createElement('span');
-            heart.classList.add('heart');
-            if (count % 10 === 0) {
-                heart.innerText = '💖'; // Special heart for every 10th click
-                heart.classList.add('gold-heart');
-            } else {
-                heart.innerText = '❤️';
-            }
-
-            const randomX = Math.floor(Math.random() * 101) - 50;
-            heart.style.setProperty('--random-x', randomX + 'px');
-            /*heart.className = 'heart';*/
-            heart.style.left = clickEvent.pageX + 'px';
-            heart.style.top = clickEvent.pageY + 'px';
-            document.body.appendChild(heart);
-            // Remove heart after animation finishes
-            setTimeout(() => heart.remove(), 2000);
-        };
-
-        window.onload = () => {
-            // Initialize the total count on page load
-            const savedId = localStorage.getItem('lastCatId');
-            if (localStorage.getItem('rankingsOpen') === 'true') {
-                document.getElementById('leaderboard-details').open = true;
-            }
-
-            if (savedId) {
-                // If we remember a cat, load that specific one
-                loadSpecificCat(savedId).then(() => {
-                    document.body.style.opacity = 1;
-                });;
-            } else {
-                fetch('/initial_pet')
-                    .then(response => response.json())
-                    .then(data => {
-                        updateCat(data);
-                        updatePetCount(data.pet_count);
-                        updateLeaderboard(); // Load the leaderboard
-                        document.body.style.opacity = 1 // Call the helper!
-
-                    });
-            }
-            //document.body.style.opacity = 1 // Call the helper!
-        };
         pet.onclick = (event) => {
-            clickCount++; // Increase our counter by 1
-            // Check if clickCount is divisible by 3 (remainder is 0)
+            clickCount++;
             if (clickCount % 3 === 0) {
-                const audio = document.getElementById('meow-sound');
-                audio.currentTime = 0;
-                audio.play();
+                meowSound.currentTime = 0;
+                meowSound.play();
             }
 
             fetch(`/pet_cat/${currentCatId}`)
                 .then(response => response.json())
                 .then(data => {
-                    updatePetCount(data.pet_count);
+                    updatePetCountUI(data.pet_count);
                     heartLogic(data.pet_count, event);
                     updateLeaderboard();
                 });
-
         };
+
+        leaderboardDetails.addEventListener('toggle', (event) => {
+            localStorage.setItem('rankingsOpen', event.target.open);
+        });
+
+        const toggleCatForm = () => {
+            const container = document.getElementById('add-cat-form-container');
+            const btn = document.getElementById('toggle-form-btn');
+            const isOpen = container.style.display === 'none';
+
+            container.style.display = isOpen ? 'block' : 'none';
+            btn.innerText = isOpen ? 'Cancel' : '+ Add a New Athlete';
+            btn.style.background = isOpen ? '#e74c3c' : '#00ce8a';
+        };
+
+        /* ============================================================
+           5. INITIALIZATION
+           ============================================================ */
+
+        window.onload = () => {
+            const savedId = localStorage.getItem('lastCatId');
+            const rankingsWasOpen = localStorage.getItem('rankingsOpen') === 'true';
+
+            if (rankingsWasOpen) leaderboardDetails.open = true;
+
+            if (savedId) {
+                loadSpecificCat(savedId).then(() => {
+                    document.body.style.opacity = 1;
+                });
+            } else {
+                fetch('/initial_pet')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateCatUI(data);
+                        updatePetCountUI(data.pet_count);
+                        updateLeaderboard();
+                        document.body.style.opacity = 1;
+                    });
+            }
+        };
+
+
+
     </script>
 </body>
 

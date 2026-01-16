@@ -1,0 +1,238 @@
+body {
+    text-align: center;
+    font-family: 'helvetica', cursive;
+    background: #270a6c;
+    color: rgb(172, 140, 224);
+    padding-top: 50px;
+    opacity: 0;
+}
+
+#total-count {
+    font-weight: bold;
+    /* Make it bold */
+    display: inline-block;
+    /* Required for transform animations to work */
+    transition: transform 0.1s;
+}
+
+/* This is the animation recipe */
+@keyframes heart-pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.4);
+        color: #ff1744;
+    }
+
+    /* Grow and turn bright red */
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* This class will be added/removed by JavaScript */
+.pulse-animation {
+    animation: heart-pulse 0.3s ease-out;
+}
+
+#pet {
+    font-size: 100px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: inline-block;
+    user-select: none;
+    touch-action: manipulation;
+    /* Prevents highlighting */
+}
+
+#pet:active {
+    transform: scale(1.2);
+}
+
+.heart {
+    color: red;
+    /*Old browsers will possibly show black heart text Red heart */
+    position: absolute;
+    animation: float 2s ease-in forwards;
+    user-select: none;
+    /* Prevents highlighting */
+    pointer-events: none;
+    /* The "Ghost" property */
+}
+
+h1,
+h2 {
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.3);
+    /* Adds a white glow behind your title */
+}
+
+.gold-heart {
+    filter: drop-shadow(0 0 10px gold);
+    /* This makes the emoji glow gold and shifts the red color to yellow */
+    font-weight: bold;
+}
+
+.active-cat {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-weight: bold;
+    padding: 5px;
+}
+
+#cat-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    /* This makes cards jump to the next line on mobile */
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+}
+
+.cat-card {
+    width: 120px;
+    /* Fixed width so they look like consistent cards */
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    
+}
+
+.cat-card:hover {
+    transform: translateY(-5px);
+    /* Lift the card slightly when hovered */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#add-cat-form {
+    margin: 50px auto;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    /* Semi-transparent white */
+    border-radius: 20px;
+    max-width: 500px;
+    backdrop-filter: blur(10px);
+    /* Blurs the background behind the form */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+
+}
+
+#add-cat-form h3 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: white;
+}
+
+/* Style all inputs, selects, and buttons together for consistency */
+#new-cat-name,
+#new-cat-emoji,
+#new-cat-color,
+#add-cat-form button {
+    padding: 12px;
+    margin: 5px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+
+#new-cat-name {
+    width: 200px;
+}
+
+#new-cat-emoji {
+    cursor: pointer;
+    background: white;
+}
+
+#new-cat-color {
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    /* Removes the weird internal spacing */
+    border: none;
+    background: none;
+    /* Removes the default grey button background */
+    cursor: pointer;
+    vertical-align: middle;
+    /* Backup alignment for older browsers */
+}
+
+#add-cat-form button {
+    background: #00ce8a;
+    /* A nice "Success" green */
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    padding: 12px 25px;
+}
+
+#add-cat-form button:hover {
+    background: #00f0a0;
+    transform: translateY(-2px);
+}
+
+#add-cat-form button:active {
+    transform: translateY(0);
+}
+
+#toggle-form-btn {
+    padding: 12px 20px;
+    border-radius: 50px;
+    /* Makes it a pill shape */
+    border: none;
+    background: #00ce8a;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#toggle-form-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 206, 138, 0.4);
+}
+
+/* Hide the default browser arrow so we can use our own */
+summary::-webkit-details-marker {
+    display: none;
+}
+
+#leaderboard-details {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 15px;
+    max-width: 600px;
+    margin: 20px auto;
+    transition: all 0.3s ease;
+}
+
+#leaderboard-details[open] {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+#leaderboard-details[open] #arrow {
+    display: inline-block;
+    transform: rotate(90deg);
+    /* Rotates the arrow down when open */
+    transition: transform 0.2s;
+}
+
+#arrow {
+    margin-right: 10px;
+    transition: transform 0.2s;
+    display: inline-block;
+}
+
+@keyframes float {
+    to {
+        transform: translateY(-200px) translateX(var(--random-x)) rotate(-20deg);
+        opacity: 0;
+    }
+}

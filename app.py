@@ -46,7 +46,8 @@ with app.app_context():
 def home():
     return render_template('index.html')
     
-
+def jsonify_cat(cat):
+    return jsonify(id=cat.id, name=cat.name, emoji=cat.emoji, bg_color=cat.bg_color, pet_count=cat.pet_count)
 @app.route('/initial_pet')
 def initial_pet():
     cat = Cat.query.order_by(func.random()).first()
@@ -59,7 +60,7 @@ def leaderboard():
     cats = Cat.query.order_by(Cat.pet_count.desc()).all()
     # Convert the list of Cat objects into a list of dictionaries
     leaderboard_data = [
-        {"id": c.id, "name": c.name, "pet_count": c.pet_count, "emoji": c.emoji} 
+        {"id": c.id, "name": c.name, "pet_count": c.pet_count, "emoji": c.emoji, "bg_color": c.bg_color} 
         for c in cats
     ]
     return jsonify(leaderboard_data)
