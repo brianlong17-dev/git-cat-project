@@ -51,6 +51,7 @@
             transition: transform 0.2s;
             display: inline-block;
             user-select: none;
+            touch-action: manipulation;
             /* Prevents highlighting */
         }
 
@@ -88,6 +89,154 @@
             padding: 5px;
         }
 
+        #cat-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            /* This makes cards jump to the next line on mobile */
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .cat-card {
+            width: 120px;
+            /* Fixed width so they look like consistent cards */
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .cat-card:hover {
+            transform: translateY(-5px);
+            /* Lift the card slightly when hovered */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #add-cat-form {
+            margin: 50px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            /* Semi-transparent white */
+            border-radius: 20px;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+            /* Blurs the background behind the form */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+
+        }
+
+        #add-cat-form h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        /* Style all inputs, selects, and buttons together for consistency */
+        #new-cat-name,
+        #new-cat-emoji,
+        #new-cat-color,
+        #add-cat-form button {
+            padding: 12px;
+            margin: 5px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        #new-cat-name {
+            width: 200px;
+        }
+
+        #new-cat-emoji {
+            cursor: pointer;
+            background: white;
+        }
+
+        #new-cat-color {
+            width: 45px;
+            height: 45px;
+            padding: 0;
+            /* Removes the weird internal spacing */
+            border: none;
+            background: none;
+            /* Removes the default grey button background */
+            cursor: pointer;
+            vertical-align: middle;
+            /* Backup alignment for older browsers */
+        }
+
+        #add-cat-form button {
+            background: #00ce8a;
+            /* A nice "Success" green */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            padding: 12px 25px;
+        }
+
+        #add-cat-form button:hover {
+            background: #00f0a0;
+            transform: translateY(-2px);
+        }
+
+        #add-cat-form button:active {
+            transform: translateY(0);
+        }
+
+        #toggle-form-btn {
+            padding: 12px 20px;
+            border-radius: 50px;
+            /* Makes it a pill shape */
+            border: none;
+            background: #00ce8a;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #toggle-form-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 206, 138, 0.4);
+        }
+
+        /* Hide the default browser arrow so we can use our own */
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        #leaderboard-details {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 15px;
+            max-width: 600px;
+            margin: 20px auto;
+            transition: all 0.3s ease;
+        }
+
+        #leaderboard-details[open] {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        #leaderboard-details[open] #arrow {
+            display: inline-block;
+            transform: rotate(90deg);
+            /* Rotates the arrow down when open */
+            transition: transform 0.2s;
+        }
+
+        #arrow {
+            margin-right: 10px;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
         @keyframes float {
             to {
                 transform: translateY(-200px) translateX(var(--random-x)) rotate(-20deg);
@@ -103,10 +252,43 @@
     <div id="pet">🐱</div>
     <h2 id="message">Click the cat to give it love.</h2>
     <p>Love count: <span id="total-count">0</span></p>
-    <div id="leaderboard-container">
-        <h3>Cat Rankings</h3>
-        <ul id="leaderboard-list" style="list-style: none; padding: 0;"></ul>
+    <div id="cat-gallery" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
     </div>
+    <details id="leaderboard-details" style="margin-top: 20px; cursor: pointer;">
+        <summary style="font-size: 1.2rem; font-weight: bold; color: white; list-style: none;">
+            <span id="arrow">▶</span> Cat Rankings
+        </summary>
+        <div id="leaderboard-container">
+            <h3>Cat Rankings</h3>
+            <ul id="leaderboard-list" style="list-style: none; padding: 0;"></ul>
+        </div>
+    </details>
+
+
+
+    <div id="add-cat-form-container" style="display: none;">
+        <div id="add-cat-form">
+            <h3>New Cat Entry</h3>
+            <div class="input-row">
+                <input type="text" id="new-cat-name" placeholder="Cat Name">
+                <select id="new-cat-emoji" style="font-size: 20px;">
+                    <option value="🐱">🐱</option>
+                    <option value="😹">😹</option>
+                    <option value="😻">😻</option>
+                    <option value="🦁">🦁</option>
+                    <option value="🐯">🐯</option>
+                    <option value="🐆">🐆</option>
+                    <option value="🐈‍⬛">🐈‍⬛</option>
+                    <option value="🙀">🙀</option>
+                </select>
+                <input type="color" id="new-cat-color" value="#ffffff">
+            </div>
+            <button onclick="addNewCat()" style="margin-top: 15px;">Create Cat</button>
+        </div>
+    </div>
+    <button id="toggle-form-btn" onclick="toggleCatForm()" style="margin-top: 30px;">
+        + Add a New Athlete
+    </button>
 
     <script>
         let currentCatId = null;
@@ -114,6 +296,12 @@
         const pet = document.getElementById('pet');
         const msg = document.getElementById('message');
         const counterElement = document.getElementById('total-count');
+
+        // Listen for opening/closing the rankings
+        document.getElementById('leaderboard-details').addEventListener('toggle', (event) => {
+            const isOpen = event.target.open;
+            localStorage.setItem('rankingsOpen', isOpen);
+        });
         const updatePetCount = (count) => {
             counterElement.innerText = "❤️x" + count;
             // Trigger the pulse!
@@ -122,13 +310,59 @@
             counterElement.classList.add('pulse-animation');
         };
 
+        const toggleCatForm = () => {
+            const container = document.getElementById('add-cat-form-container');
+            const btn = document.getElementById('toggle-form-btn');
+
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                btn.innerText = 'Cancel'; // Change button text when open
+                btn.style.background = '#e74c3c'; // Optional: make it red for "cancel"
+            } else {
+                container.style.display = 'none';
+                btn.innerText = '+ Add a New Athlete';
+                btn.style.background = '#00ce8a'; // Switch back to green
+            }
+        };
+
         const loadSpecificCat = (catId) => {
-            fetch(`/get_cat/${catId}`)
+            const idToFetch = Number(catId);
+            if (currentCatId != catId) {
+                return fetch(`/get_cat/${catId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        updateCat(data);
+                        updatePetCount(data.pet_count);
+                        updateLeaderboard();
+                    });
+            }
+            return Promise.resolve();
+        };
+
+        const addNewCat = () => {
+            const catData = {
+                name: document.getElementById('new-cat-name').value,
+                emoji: document.getElementById('new-cat-emoji').value,
+                color: document.getElementById('new-cat-color').value
+            };
+
+            if (catData.name.trim() === "") {
+                alert("Wait! Your cat needs a name.");
+                return; // This stops the function from sending the data to Flask
+            }
+
+            fetch('/add_cat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(catData)
+            })
                 .then(response => response.json())
                 .then(data => {
-                    updateCat(data);
-                    updatePetCount(data.pet_count);
-                    updateLeaderboard();
+                    if (data.success) {
+                        toggleCatForm();
+                        updateLeaderboard(); // Refresh the gallery to show the new cat!
+                        loadSpecificCat(data.id); // Switch to the new cat immediately
+                    }
                 });
         };
 
@@ -138,12 +372,45 @@
                 .then(data => {
                     const list = document.getElementById('leaderboard-list');
                     list.innerHTML = ''; // Clear the old list
+                    const gallery = document.getElementById('cat-gallery');
+                    gallery.innerHTML = '';
+                    let catCount = 0;
 
                     data.forEach(cat => {
+                        catCount++;
+                        const card = document.createElement('div');
+
+                        if (catCount === 1) {
+                            card.style.boxShadow = '0 0 15px 5px gold';
+                            card.style.backgroundColor = cat.bg_color;
+                        }
+                        if (catCount === 2) {
+                            card.style.boxShadow = '0 0 15px 5px silver';
+                        }
+                        if (catCount === 3) {
+                            card.style.boxShadow = '0 0 15px 5px #cd7f32'; // Bronze color
+                        }
+                        if (catCount <= 5) {
+                            card.className = 'cat-card';
+                            card.style.backgroundColor = cat.bg_color;
+                            card.innerHTML = `
+                            <div style="font-size: 30px;">${cat.emoji}</div>
+                                <div style="font-weight: bold;">${cat.name}</div>
+                                <div>❤️ x ${cat.pet_count}</div>`;
+
+                            card.onclick = () => loadSpecificCat(cat.id);
+                            gallery.appendChild(card);
+
+                        }
                         const li = document.createElement('li');
                         if (cat.id === currentCatId) {
                             li.classList.add('active-cat');
                         }
+                        if (cat.id === currentCatId) {
+                            card.classList.add('active-cat');
+                        }
+
+                        card.style.backgroundColor = cat.bg_color;
                         li.style.cursor = "pointer";
                         li.style.margin = "10px 0";
                         li.innerHTML = `${cat.emoji} <strong>${cat.name}</strong>: ${cat.pet_count} pets`;
@@ -181,9 +448,10 @@
         const updateCat = (cat) => {
             currentCatId = cat.id;
             pet.innerText = cat.emoji;
+            localStorage.setItem('lastCatId', cat.id);
             /*document.body.style.backgroundColor = cat.bg_color;*/
             const textColor = getContrastColor(cat.bg_color);
-            document.body.style.color = cat.bg_color;
+            //document.body.style.color = cat.bg_color;
             msg.innerText = "The Cat's name is: " + cat.name;
         };
 
@@ -209,14 +477,28 @@
 
         window.onload = () => {
             // Initialize the total count on page load
-            fetch('/initial_pet')
-                .then(response => response.json())
-                .then(data => {
-                    updateCat(data);
-                    updatePetCount(data.pet_count);
-                    updateLeaderboard(); // Load the leaderboard
-                    document.body.style.opacity = 1 // Call the helper!
-                });
+            const savedId = localStorage.getItem('lastCatId');
+            if (localStorage.getItem('rankingsOpen') === 'true') {
+                document.getElementById('leaderboard-details').open = true;
+            }
+
+            if (savedId) {
+                // If we remember a cat, load that specific one
+                loadSpecificCat(savedId).then(() => {
+                    document.body.style.opacity = 1;
+                });;
+            } else {
+                fetch('/initial_pet')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateCat(data);
+                        updatePetCount(data.pet_count);
+                        updateLeaderboard(); // Load the leaderboard
+                        document.body.style.opacity = 1 // Call the helper!
+
+                    });
+            }
+            //document.body.style.opacity = 1 // Call the helper!
         };
         pet.onclick = (event) => {
             clickCount++; // Increase our counter by 1

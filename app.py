@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 import random
 import os
+from flask import request 
+
 
 app = Flask(__name__)
 # Tell Flask to use the Database URL from Render, or a local one if testing
@@ -74,6 +76,21 @@ def pet_cat(cat_id):
     db.session.commit()
     return jsonify(pet_count=cat.pet_count) 
 
+@app.route('/add_cat', methods=['POST'])
+def add_cat():
+    data = request.json
+    #Basic validation
+    if not all(k in data for k in ('name', 'emoji', 'color')):
+        return jsonify({"success": False, "error": "Missing data"}), 400
+    new_cat = Cat(
+        name=data['name'],
+        emoji=data['emoji'],
+        bg_color=data['color'],
+        pet_count=0
+    )
+    db.session.add(new_cat)
+    db.session.commit()
+    return jsonify({"success": True, "id": new_cat.id})
 
 if __name__ == '__main__':
     app.run(debug=True)
